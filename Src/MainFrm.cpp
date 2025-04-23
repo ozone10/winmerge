@@ -78,6 +78,7 @@
 #include <Poco/Logger.h>
 #include <Poco/AsyncChannel.h>
 #include <Poco/SimpleFileChannel.h>
+#include "DarkMode/DarkModeSubclass.h"
 
 #if !defined(SM_CXPADDEDBORDER)
 #define SM_CXPADDEDBORDER       92
@@ -434,7 +435,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndMDIClient.SubclassWindow(m_hWndMDIClient);
 
 	if (IsWin10_OrGreater())
+	{
 		m_bTabsOnTitleBar = GetOptionsMgr()->GetBool(OPT_TABBAR_ON_TITLEBAR);
+		DarkMode::initDarkMode();
+		HWND hSelf = GetSafeHwnd();
+		if (hSelf != nullptr)
+		{
+			DarkMode::setDarkTitleBar(hSelf);
+			DarkMode::autoSubclassNotifyCustomDraw(hSelf, true);
+		}
+	}
 
 	m_wndTabBar.Update(m_bTabsOnTitleBar.value_or(false), false);
 
@@ -449,7 +459,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Failed to create toolbar\n");
 		return -1;      // fail to create
 	}
-	
+
 	if (!m_bTabsOnTitleBar.value_or(false) && !m_wndTabBar.Create(this))
 	{
 		TRACE0("Failed to create tab bar\n");
@@ -2659,7 +2669,7 @@ BOOL CMainFrame::CreateToolbar()
 		return FALSE;
 	}
 
-	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT | TBSTYLE_TRANSPARENT) ||
+	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT | TBSTYLE_TRANSPARENT | TBSTYLE_TOOLTIPS) ||
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
 	{
 		return FALSE;
@@ -2673,7 +2683,7 @@ BOOL CMainFrame::CreateToolbar()
 
 	// Remove this if you don't want tool tips or a resizable toolbar
 	m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+		/*CBRS_TOOLTIPS | */CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 	m_wndToolBar.GetToolBarCtrl().SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 
 	m_wndReBar.AddBar(&m_wndMenuBar);
@@ -2703,6 +2713,12 @@ BOOL CMainFrame::CreateToolbar()
 	}
 
 	m_wndReBar.LoadStateFromString(GetOptionsMgr()->GetString(OPT_REBAR_STATE).c_str());
+
+	HWND hTip = m_wndToolBar.GetToolBarCtrl().GetToolTips()->GetSafeHwnd();
+	if (hTip != nullptr)
+	{
+		DarkMode::setDarkTooltips(hTip);
+	}
 
 	return TRUE;
 }

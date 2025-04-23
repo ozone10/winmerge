@@ -36,6 +36,7 @@
 #include "Win_VersionHelper.h"
 #include "OptionsProject.h"
 #include "Merge7zFormatMergePluginImpl.h"
+#include "DarkMode/DarkModeSubclass.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -198,10 +199,22 @@ void COpenView::OnInitialUpdate()
 
 	theApp.TranslateDialog(m_hWnd);
 
+	HWND hSelf = GetSafeHwnd();
+	if (hSelf != nullptr)
+	{
+		DarkMode::autoSubclassAndThemeChildControls(hSelf);
+		DarkMode::autoSubclassCtlColor(hSelf);
+	}
+
 	if (!LoadImageFromResource(m_image, MAKEINTRESOURCE(IDR_LOGO), _T("IMAGE")))
 	{
 		// FIXME: LoadImageFromResource() seems to fail when running on Wine 5.0.
 		m_image.Create(1, 1, 24, 0);
+	}
+
+	if (DarkMode::isExperimentalActive())
+	{
+		WinMergeDarkMode::InvertLightness(m_image);
 	}
 
 	__super::OnInitialUpdate();
@@ -369,13 +382,23 @@ void COpenView::OnPaint()
 	CRect rcImage(0, 0, size.cx * GetSystemMetrics(SM_CXSMICON) / 16, size.cy * GetSystemMetrics(SM_CYSMICON) / 16);
 	m_image.Draw(dc.m_hDC, rcImage, Gdiplus::InterpolationModeBicubic);
 	// And extend it to the Right boundary
-	dc.PatBlt(rcImage.Width(), 0, rc.Width() - rcImage.Width(), rcImage.Height(), PATCOPY);
+	if (!DarkMode::isExperimentalActive())
+		dc.PatBlt(rcImage.Width(), 0, rc.Width() - rcImage.Width(), rcImage.Height(), PATCOPY);
 
 	// Draw the resize gripper in the Lower Right corner.
 	CRect rcGrip = rc;
 	rcGrip.left = rc.right - GetSystemMetrics(SM_CXVSCROLL);
 	rcGrip.top = rc.bottom - GetSystemMetrics(SM_CYHSCROLL);
-	dc.DrawFrameControl(&rcGrip, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+	HTHEME hTheme = OpenThemeData(GetSafeHwnd(), WC_SCROLLBAR);
+	if (hTheme)
+	{
+		DrawThemeBackground(hTheme, dc.GetSafeHdc(), SBP_SIZEBOX, 0, &rcGrip, nullptr);
+		CloseThemeData(hTheme);
+	}
+	else
+	{
+		dc.DrawFrameControl(&rcGrip, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+	}
 
 	// Draw a line to separate the Status Line
 	CPen newPen(PS_SOLID, 1, RGB(208, 208, 208));	// a very light gray

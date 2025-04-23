@@ -648,7 +648,16 @@ CMoveConstraint::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, L
 	} else if (WM_PAINT == msg && PaintGrip()) {
 		CPaintDC dc(CWnd::FromHandle(hWnd));
 		RECT rc = getGripRect(hWnd);
-		dc.DrawFrameControl(&rc, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+		HTHEME hTheme = OpenThemeData(hWnd, WC_SCROLLBAR);
+		if (hTheme)
+		{
+			DrawThemeBackground(hTheme, dc.GetSafeHdc(), SBP_SIZEBOX, 0, &rc, nullptr);
+			CloseThemeData(hTheme);
+		}
+		else
+		{
+			dc.DrawFrameControl(&rc, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+		}
 	} else if (WM_NCHITTEST == msg && !IsIconic(hWnd) && !IsZoomed(hWnd)) {
 		if (OnNcHitTest(msg, wParam, lParam, plresult))
 			return true;

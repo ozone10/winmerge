@@ -12,6 +12,7 @@
 #include "paths.h"
 #include "Environment.h"
 #include "resource.h" // IDD_ABOUTBOX
+#include "DarkMode/DarkModeSubclass.h"
 
  // https://www.gnu.org/graphics/gnu-ascii.html
  // Copyright (c) 2001 Free Software Foundation, Inc.
@@ -110,6 +111,11 @@ BOOL CAboutDlg::Impl::OnInitDialog()
 		// FIXME: LoadImageFromResource() seems to fail when running on Wine 5.0.
 	}
 
+	if (DarkMode::isExperimentalActive())
+	{
+		WinMergeDarkMode::InvertLightness(m_image);
+	}
+
 	GetDlgItem(IDC_VERSION)->SetFont(&m_font);
 	GetDlgItem(IDC_GNU_ASCII)->SetFont(&m_font_gnu_ascii);
 	::SetDlgItemTextA(m_hWnd, IDC_GNU_ASCII, gnu_ascii);
@@ -120,6 +126,12 @@ BOOL CAboutDlg::Impl::OnInitDialog()
 	SetDlgItemText(IDC_WWW, link);
 
 	UpdateData(FALSE);
+
+	HWND hSelf = m_hWnd;
+	if (hSelf != nullptr)
+	{
+		WinMergeDarkMode::SubclassAsciiArt(hSelf);
+	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

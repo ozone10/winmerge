@@ -936,6 +936,8 @@
     <ClCompile Include="charsets.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="DarkMode\DarkMode.cpp" />
+    <ClCompile Include="DarkMode\DarkModeSubclass.cpp" />
     <ClCompile Include="DirAdditionalPropertiesDlg.cpp" />
     <ClCompile Include="DirSelectFilesDlg.cpp" />
     <ClCompile Include="DirWatcher.cpp">
@@ -956,6 +958,10 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName)2.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClInclude Include="DarkMode\DarkMode.h" />
+    <ClInclude Include="DarkMode\DarkModeSubclass.h" />
+    <ClInclude Include="DarkMode\StdAfx.h" />
+    <ClInclude Include="DarkMode\Version.h" />
     <ClInclude Include="FrameWndHelper.h" />
     <ClInclude Include="Logger.h">
       <FileType>CppCode</FileType>

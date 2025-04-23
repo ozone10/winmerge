@@ -12,6 +12,7 @@
 #include <vector>
 #include "SplitterWndEx.h"
 #include "cecolor.h"
+#include "DarkMode/DarkModeSubclass.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -49,6 +50,20 @@ int CSplitterWndEx::HitTest(CPoint pt) const
 	if (m_bBarLocked)
 		return 0;
 	return CSplitterWnd::HitTest(pt);
+}
+
+BOOL CSplitterWndEx::CreateScrollBarCtrl(DWORD dwStyle, UINT nID)
+{
+	BOOL bResult = CSplitterWnd::CreateScrollBarCtrl(dwStyle, nID);
+
+	auto pBar = static_cast<CScrollBar*>(GetDlgItem(nID));
+	if (pBar != nullptr && pBar->GetSafeHwnd())
+	{
+		DarkMode::setDarkScrollBar(pBar->GetSafeHwnd());
+		pBar->Invalidate();
+	}
+
+	return bResult;
 }
 
 CScrollBar* CSplitterWndEx::GetScrollBarCtrl(CWnd* pWnd, int nBar) const

@@ -19,6 +19,7 @@
 #pragma warning (pop)
 #include "paths.h"
 #include "MergeApp.h"
+#include "DarkMode/DarkModeSubclass.h"
 
 static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam,
 		LPARAM lpData);
@@ -170,6 +171,10 @@ static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam,
 			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
 		else
 			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, (LPARAM)LastSelectedFolder.c_str());
+
+		DarkMode::setDarkTitleBar(hwnd);
+		DarkMode::autoSubclassCtlColor(hwnd);
+		DarkMode::autoSubclassAndThemeChildControls(hwnd);
 	}
 	else if (uMsg == BFFM_VALIDATEFAILED)
 	{

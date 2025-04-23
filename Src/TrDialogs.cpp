@@ -2,6 +2,7 @@
 #include "Merge.h"
 #include "TrDialogs.h"
 #include "Logger.h"
+#include "DarkMode/DarkModeSubclass.h"
 
 IMPLEMENT_DYNAMIC(CTrDialog, CDialog)
 IMPLEMENT_DYNAMIC(CTrPropertyPage, CPropertyPage)
@@ -31,6 +32,13 @@ BOOL CTrDialog::OnInitDialog()
 {
 	theApp.TranslateDialog(m_hWnd);
 	__super::OnInitDialog();
+	HWND hSelf = GetSafeHwnd();
+	if (hSelf != nullptr)
+	{
+		DarkMode::setDarkTitleBar(hSelf);
+		DarkMode::autoSubclassCtlColor(hSelf);
+		DarkMode::autoSubclassAndThemeChildControls(hSelf);
+	}
 	return TRUE;
 }
 
@@ -50,6 +58,20 @@ BOOL CTrPropertyPage::OnInitDialog()
 {
 	theApp.TranslateDialog(m_hWnd);
 	__super::OnInitDialog();
+	HWND hSelf = GetSafeHwnd();
+	if (hSelf != nullptr)
+	{
+		DarkMode::autoSubclassCtlColor(hSelf);
+		DarkMode::autoSubclassAndThemeChildControls(hSelf);
+	}
+
+	HWND hParent = *GetParent();
+	if (hParent != nullptr)
+	{
+		DarkMode::setDarkTitleBar(hParent);
+		DarkMode::autoSubclassCtlColor(hParent);
+		DarkMode::autoSubclassAndThemeChildControls(hParent);
+	}
 	return TRUE;
 }
 

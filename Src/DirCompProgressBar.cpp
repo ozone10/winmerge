@@ -9,6 +9,7 @@
 #include "CompareStats.h"
 #include "DiffContext.h"
 #include "paths.h"
+#include "DarkMode/DarkModeSubclass.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -82,6 +83,13 @@ BOOL DirCompProgressBar::Create(CWnd* pParentWnd)
 	if (SUCCEEDED(CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_ALL, IID_ITaskbarList3, (void**)&m_pTaskbarList)))
 		m_pTaskbarList->SetProgressState(AfxGetMainWnd()->m_hWnd, TBPF_INDETERMINATE);
 #endif
+
+	HWND hSelf = GetSafeHwnd();
+	if (hSelf != nullptr)
+	{
+		DarkMode::autoSubclassCtlColor(hSelf);
+		DarkMode::autoSubclassAndThemeChildControls(hSelf);
+	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "WMGotoDlg.h"
 #include "TrDialogs.h"
+#include "DarkMode/DarkModeSubclass.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -87,6 +88,14 @@ BOOL WMGotoDlg::Impl::OnInitDialog()
 	UpdateRange();
 	UpdateGoToButton();
 	UpdateData(FALSE);
+
+	HWND hSelf = GetSafeHwnd();
+	if (hSelf != nullptr)
+	{
+		DarkMode::setDarkTitleBar(hSelf);
+		DarkMode::autoSubclassCtlColor(hSelf);
+		DarkMode::autoSubclassAndThemeChildControls(hSelf);
+	}
 
 	return TRUE;
 }

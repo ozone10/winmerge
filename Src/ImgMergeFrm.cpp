@@ -34,6 +34,7 @@
 #include "DropHandler.h"
 #include "Environment.h"
 #include <cmath>
+#include "DarkMode/DarkModeSubclass.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -515,6 +516,13 @@ BOOL CImgMergeFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 	m_pImgToolWindow->Translate(TranslateLocationPane);
 
 	m_wndLocationBar.SetFrameHwnd(GetSafeHwnd());
+
+	HWND hPane = m_pImgToolWindow->GetHWND();
+	if (hPane != nullptr)
+	{
+		DarkMode::autoSubclassCtlColor(hPane);
+		DarkMode::autoSubclassNotifyCustomDraw(hPane, true);
+	}
 
 	return TRUE;
 }
