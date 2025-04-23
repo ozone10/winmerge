@@ -7,6 +7,7 @@
 
 #include "stdafx.h"
 #include "ColorButton.h"
+#include "MergeDarkMode.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -34,7 +35,12 @@ CColorButton::CColorButton(COLORREF clrFill)
  */
 void CColorButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) 
 {
-	::FillRect(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, CBrush(m_clrFill));
+#if defined(USE_DARKMODELIB)
+	if (DarkMode::isEnabled())
+		DarkMode::paintRoundRect(lpDrawItemStruct->hDC, lpDrawItemStruct->rcItem, DarkMode::getEdgePen(), CBrush(m_clrFill));
+	else
+#endif
+		::FillRect(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, CBrush(m_clrFill));
 }
 
 /** 

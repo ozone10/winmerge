@@ -1819,6 +1819,7 @@
 #define IDS_LOG_PERMANENTLY_DELETED     44660
 #define IDS_LOG_FILEOPERATION_COMPLETED 44661
 #define IDS_LOG_FILEOPERATION_CANCELED  44662
+#define IDD_DARK_FONT_DIALOG            44663
 
 // Next default values for new objects
 // 
