@@ -12,6 +12,7 @@
 #include "paths.h"
 #include "Environment.h"
 #include "resource.h" // IDD_ABOUTBOX
+#include "MergeDarkMode.h"
 
  // https://www.gnu.org/graphics/gnu-ascii.html
  // Copyright (c) 2001 Free Software Foundation, Inc.
@@ -120,7 +121,19 @@ BOOL CAboutDlg::Impl::OnInitDialog()
 	SetDlgItemText(IDC_WWW, link);
 
 	UpdateData(FALSE);
-	
+#if !defined(_DARKMODELIB_NOT_USED)
+	if (DarkMode::isExperimentalActive())
+	{
+		WinMergeDarkMode::InvertLightness(m_image);
+	}
+
+	HWND hSelf = m_hWnd;
+	if (hSelf != nullptr)
+	{
+		DarkMode::removeWindowEraseBgSubclass(hSelf);
+		WinMergeDarkMode::SubclassAsciiArt(hSelf);
+	}
+#endif
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }

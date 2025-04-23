@@ -34,6 +34,7 @@
 #include "DropHandler.h"
 #include "Environment.h"
 #include <cmath>
+#include "MergeDarkMode.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -492,6 +493,10 @@ BOOL CImgMergeFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 
 		RegisterDragDrop(m_pImgMergeWindow->GetPaneHWND(pane),
 			new DropHandler(std::bind(&CImgMergeFrame::OnDropFiles, this, pane, std::placeholders::_1)));
+
+#if !defined(_DARKMODELIB_NOT_USED)
+		DarkMode::setDarkScrollBar(m_pImgMergeWindow->GetPaneHWND(pane));
+#endif
 	}
 
 	// Merge frame has also a dockable bar at the very left
@@ -515,7 +520,14 @@ BOOL CImgMergeFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 	m_pImgToolWindow->Translate(TranslateLocationPane);
 
 	m_wndLocationBar.SetFrameHwnd(GetSafeHwnd());
-
+#if !defined(_DARKMODELIB_NOT_USED)
+	HWND hPane = m_pImgToolWindow->GetHWND();
+	if (hPane != nullptr)
+	{
+		DarkMode::setWindowCtlColorSubclass(hPane);
+		DarkMode::setWindowNotifyCustomDrawSubclass(hPane, true);
+	}
+#endif
 	return TRUE;
 }
 
